@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>비둘기 캡차</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-image: url('main_image.jpg'); /* 캡차 원본 */
+            background-size: cover;
+            background-position: center;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            position: relative;
+        }
+        .captcha-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-gap: 10px;
+            z-index: 2;
+        }
+        .tile {
+            width: 100px;
+            height: 100px;
+            border: 3px solid transparent;
+            cursor: pointer;
+        }
+        .selected {
+            border: 3px solid red;
+        }
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border: 2px solid black;
+            max-width: 400px;
+            text-align: center;
+            z-index: 100;
+        }
+        .popup img {
+            width: 100%;
+            height: auto;
+        }
+        .video-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+        }
+        video {
+            width: 80%;
+            height: auto;
+            margin-top: 10%;
+        }
+        #reasonButton {
+            margin-top: 10px;
+            display: none;
+            cursor: pointer;
+        }
+        .extra-image {
+            width: 709px;
+            height: 532px;
+            position: absolute;
+            top: 44%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            cursor: pointer;
+            z-index: 1;
+        }
+        #confirmButton {
+            position: absolute;
+            top: 78%;
+            left: 57.4%;
+            transform: translate(-50%, -50%);
+            cursor: pointer;
+            z-index: 3;
+            opacity: 1;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="captcha-container">
+        <img src="tile1.jpg" class="tile" onclick="selectTile(this)">
+        <img src="tile2.jpg" class="tile" onclick="selectTile(this)">
+        <img src="tile3.jpg" class="tile" onclick="selectTile(this)">
+        <img src="tile4.jpg" class="tile" onclick="selectTile(this)">
+        <img src="tile5.png" class="tile" onclick="selectTile(this)">
+        <img src="tile6.jpg" class="tile" onclick="selectTile(this)">
+        <img src="tile7.jpg" class="tile" onclick="selectTile(this)">
+        <img src="tile8.jpg" class="tile" onclick="selectTile(this)">
+        <img src="tile9.jpg" class="tile" onclick="selectTile(this)">
+    </div>
+
+    <img id="confirmButton" src="confirm_button.png" onclick="showPopup()">
+
+    <img src="extra_image.jpg" class="extra-image" >
+
+    <div id="popup" class="popup">
+        <p>이것은 비둘기가 아닙니다</p>
+        <img id="reasonButton" src="reason_button.jpg" onclick="playVideo()">
+    </div>
+
+    <div id="videoContainer" class="video-container">
+        <video id="video" src="video.mp4" onended="resetCaptcha()"></video>
+    </div>
+
+    <script>
+        let selectedTiles = [];
+        let reasonButtonDisplayed = false;
+
+        function selectTile(tile) {
+            if (tile.classList.contains("selected")) {
+                tile.classList.remove("selected");
+                selectedTiles = selectedTiles.filter(t => t !== tile);
+            } else {
+                if (selectedTiles.length < 3) {
+                    tile.classList.add("selected");
+                    selectedTiles.push(tile);
+                }
+            }
+            let confirmButton = document.getElementById("confirmButton");
+            if (selectedTiles.length === 3) {
+                confirmButton.style.opacity = "1";
+                confirmButton.style.pointerEvents = "auto";
+            } else {
+                confirmButton.style.opacity = "1";
+                confirmButton.style.pointerEvents = "none";
+            }
+        }
+
+        function showPopup() {
+            document.getElementById("popup").style.display = "block";
+            setTimeout(() => {
+                document.getElementById("popup").style.display = "none";
+                if (!reasonButtonDisplayed) {
+                    document.getElementById("reasonButton").style.display = "inline";
+                    reasonButtonDisplayed = true;
+                }
+            }, 3000);
+        }
+
+        function playVideo() {
+            document.getElementById("popup").style.display = "none";
+            document.getElementById("videoContainer").style.display = "block";
+            document.getElementById("video").play();
+        }
+
+        function resetCaptcha() {
+            document.getElementById("videoContainer").style.display = "none";
+            selectedTiles.forEach(tile => tile.classList.remove("selected"));
+            selectedTiles = [];
+            reasonButtonDisplayed = false;
+            document.getElementById("reasonButton").style.display = "none";
+            document.getElementById("confirmButton").style.opacity = "0.5";
+            document.getElementById("confirmButton").style.pointerEvents = "none";
+        }
+    </script>
+</body>
+</html>
